@@ -42,7 +42,7 @@ export function ObjectMaterialsProvider({ children }: { children: ReactNode }) {
     const amber = new MeshStandardMaterial({
       color: new Color('#F1D7A1'),
       emissive: new Color('#F1D7A1'),
-      emissiveIntensity: 0.28,
+      emissiveIntensity: 1.4,
       roughness: 0.35,
       metalness: 0,
     })

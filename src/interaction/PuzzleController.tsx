@@ -1,5 +1,6 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
+import { Quaternion } from 'three'
 import { audio } from '../audio/AudioManager'
 import { useGameStore } from '../game/useGameStore'
 import { prefersReducedMotion } from '../lib/device'
@@ -13,6 +14,7 @@ export function PuzzleController() {
   const confirmMs = useRef(0)
   const lastNear = useRef(0)
   const reduced = prefersReducedMotion()
+  const restPose = useRef(new Quaternion())
 
   useFrame((_, dt) => {
     const phase = runtime.phase.current
@@ -74,6 +76,9 @@ export function PuzzleController() {
       phase === 'opening' ||
       (runtime.opening.current > 0 && phase !== 'idle' && phase !== 'confirming')
     ) {
+      runtime.yawVel.current = 0
+      runtime.pitchVel.current = 0
+      runtime.objectQuat.current.slerp(restPose.current, 1 - Math.exp(-2.8 * dt))
       const duration = reduced ? 0.7 : 6.2
       runtime.opening.current = Math.min(1, runtime.opening.current + dt / duration)
       useGameStore.getState().setOpeningProgress(runtime.opening.current)

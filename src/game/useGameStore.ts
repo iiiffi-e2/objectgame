@@ -6,6 +6,7 @@ import {
   type GamePhase,
   type PersistedGameState,
 } from './GameState'
+import { shouldResetOnBoot } from '../lib/debug'
 import { clearPersistedState, loadPersistedState, savePersistedState } from '../lib/storage'
 import type { DiscoveryFlags } from '../objects/object001/puzzleLogic'
 
@@ -60,7 +61,12 @@ function schedulePersist(state: GameStore): void {
 }
 
 export const useGameStore = create<GameStore>((set, get) => {
-  const loaded = loadPersistedState()
+  if (shouldResetOnBoot()) {
+    clearPersistedState()
+  }
+  const loaded = shouldResetOnBoot()
+    ? clonePersistedState(defaultPersistedState)
+    : loadPersistedState()
   const phase: GamePhase = loaded.solved
     ? 'solved'
     : loaded.alignmentSolved

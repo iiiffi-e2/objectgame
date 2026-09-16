@@ -1,4 +1,3 @@
-import { AdaptiveDpr } from '@react-three/drei'
 import { CURRENT_OBJECT_ID, OBJECT_REGISTRY } from '../objects/registry'
 import { InteractionController } from '../interaction/InteractionController'
 import { PuzzleController } from '../interaction/PuzzleController'
@@ -15,7 +14,6 @@ export function Scene() {
     <>
       <color attach="background" args={['#050505']} />
       <fog attach="fog" args={['#050505', 9, 20]} />
-      <AdaptiveDpr pixelated />
       <CameraRig />
       <Lighting />
       <SceneEnvironment />

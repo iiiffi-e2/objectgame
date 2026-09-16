@@ -22,12 +22,14 @@ export function CoreMechanism() {
     const p = panel * panel * (3 - 2 * panel)
     const o = open * open * (3 - 2 * open)
     if (upper.current) {
-      upper.current.position.y = p * 0.06 + o * 0.14
-      upper.current.rotation.x = o * -0.32
+      upper.current.position.y = p * 0.05 + o * 0.2
+      upper.current.position.z = o * -0.08
+      upper.current.rotation.x = o * -0.38
     }
     if (lower.current) {
-      lower.current.position.y = -(p * 0.04 + o * 0.1)
-      lower.current.rotation.x = o * 0.18
+      lower.current.position.y = -(p * 0.04 + o * 0.18)
+      lower.current.position.z = o * -0.22
+      lower.current.rotation.x = o * 0.34
     }
     if (cage.current) {
       cage.current.scale.setScalar(0.72 + o * 0.28)

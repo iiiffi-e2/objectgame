@@ -1,6 +1,7 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef } from 'react'
 import { Plane, Quaternion, Raycaster, Vector2, Vector3 } from 'three'
+import { tryActivateCore } from './activateCore'
 import { audio } from '../audio/AudioManager'
 import { useGameStore } from '../game/useGameStore'
 import { isCoarsePointer, prefersReducedMotion } from '../lib/device'
@@ -110,6 +111,14 @@ export function InteractionController() {
       }
 
       if (runtime.phase.current === 'opening' || runtime.phase.current === 'activating') {
+        return
+      }
+
+      const rect = canvas.getBoundingClientRect()
+      toNdc(event, rect, pointerNdc)
+      if (runtime.phase.current === 'awaitingCore' && pointerNdc.length() < 0.26) {
+        clickStart.current.target = 'core'
+        canvas.style.cursor = 'pointer'
         return
       }
 
@@ -272,16 +281,18 @@ export function InteractionController() {
       }
 
       const moved = Math.hypot(event.clientX - clickStart.current.x, event.clientY - clickStart.current.y)
-      const isClick = moved < 10 && performance.now() - clickStart.current.t < 500
+      const isClick = moved < 42 && performance.now() - clickStart.current.t < 1800
+      const rect = canvas.getBoundingClientRect()
+      toNdc(event, rect, pointerNdc)
+      const hits = pick(event)
+      const hitCore = hits.some((hit) => hit.object.userData.interact === 'core')
 
-      if (isClick && clickStart.current.target === 'core' && runtime.phase.current === 'awaitingCore') {
-        useGameStore.getState().addInteraction()
-        audio.playCoreActivate()
-        runtime.phase.current = 'activating'
-        useGameStore.getState().setPhase('activating')
-        window.setTimeout(() => {
-          runtime.bloom.current = 1
-        }, 200)
+      if (
+        runtime.phase.current === 'awaitingCore' &&
+        isClick &&
+        (clickStart.current.target === 'core' || hitCore || pointerNdc.length() < 0.22)
+      ) {
+        tryActivateCore(runtime)
       }
 
       if (isClick && clickStart.current.target === 'hatch') {
@@ -361,13 +372,14 @@ export function InteractionController() {
     runtime.yawVel.current = clamp(runtime.yawVel.current, -0.22, 0.22)
     runtime.pitchVel.current = clamp(runtime.pitchVel.current, -0.18, 0.18)
 
-    if (!runtime.grabbed.current && runtime.phase.current === 'idle' && !reduced) {
-      runtime.yawVel.current += dt * 0.012
+    if (runtime.opening.current < 0.02 && runtime.phase.current !== 'opening' && runtime.phase.current !== 'awaitingCore' && runtime.phase.current !== 'activating') {
+      if (!runtime.grabbed.current && runtime.phase.current === 'idle' && !reduced) {
+        runtime.yawVel.current += dt * 0.012
+      }
+      qYaw.setFromAxisAngle(localAxis.outer, runtime.yawVel.current)
+      qPitch.setFromAxisAngle(localAxis.middle, runtime.pitchVel.current)
+      runtime.objectQuat.current.premultiply(qYaw).multiply(qPitch).normalize()
     }
-
-    qYaw.setFromAxisAngle(localAxis.outer, runtime.yawVel.current)
-    qPitch.setFromAxisAngle(localAxis.middle, runtime.pitchVel.current)
-    runtime.objectQuat.current.premultiply(qYaw).multiply(qPitch).normalize()
 
     ;(['outer', 'middle', 'inner'] as const).forEach((id) => {
       runtime.ringShake.current[id] *= Math.exp(-8 * dt)

@@ -3,6 +3,7 @@ import { useGameStore } from '../game/useGameStore'
 import { OBJECT_001_CONFIG } from '../objects/object001/object001Config'
 import { evaluateRingAlignment } from '../objects/object001/puzzleLogic'
 import { angularDistance } from '../lib/math'
+import { tryActivateCore } from '../interaction/activateCore'
 import { useRuntime } from '../interaction/runtime'
 
 export function DebugPanel() {
@@ -45,13 +46,27 @@ export function DebugPanel() {
       <div>discoveries r:{Number(store.discoveries.rings)} l:{Number(store.discoveries.light)} s:{Number(store.discoveries.shadow)}</div>
       <div>interactions {store.interactionCount}</div>
       <div>opening {runtime.opening.current.toFixed(2)}</div>
-      <button type="button" onClick={() => {
-        runtime.rings.current.outer = OBJECT_001_CONFIG.rings.outer.target
-        runtime.rings.current.middle = OBJECT_001_CONFIG.rings.middle.target
-        runtime.rings.current.inner = OBJECT_001_CONFIG.rings.inner.target
-        runtime.ringVel.current = { outer: 0, middle: 0, inner: 0 }
-      }}>
+      <button
+        type="button"
+        onClick={() => {
+          runtime.rings.current.outer = OBJECT_001_CONFIG.rings.outer.target
+          runtime.rings.current.middle = OBJECT_001_CONFIG.rings.middle.target
+          runtime.rings.current.inner = OBJECT_001_CONFIG.rings.inner.target
+          runtime.ringVel.current = { outer: 0, middle: 0, inner: 0 }
+        }}
+      >
         ALIGN
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          runtime.opening.current = 1
+          runtime.phase.current = 'awaitingCore'
+          useGameStore.getState().setPhase('awaitingCore')
+          tryActivateCore(runtime)
+        }}
+      >
+        CORE
       </button>
       <button type="button" onClick={() => {
         useGameStore.getState().resetPuzzle()
