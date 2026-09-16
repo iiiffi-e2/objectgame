@@ -26,7 +26,7 @@ export function ShadowSurface() {
     return (
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.74, -0.15]}>
         <planeGeometry args={[16, 16]} />
-        <meshBasicMaterial color="#171716" />
+        <meshBasicMaterial color="#2a2926" />
       </mesh>
     )
   }

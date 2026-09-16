@@ -14,9 +14,9 @@ export function FloorProjection({ source }: { source: RefObject<Mesh | null> }) 
   const mesh = useRef<Mesh>(null)
   const material = useRef(
     new MeshBasicMaterial({
-      color: '#0c0c0b',
+      color: '#000000',
       transparent: true,
-      opacity: 0.56,
+      opacity: 0.72,
       depthWrite: false,
       toneMapped: false,
     }),
