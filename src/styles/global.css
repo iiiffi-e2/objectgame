@@ -1,0 +1,265 @@
+:root {
+  color-scheme: dark;
+  --bg: #050505;
+  --text: #f3f1ec;
+  --text-dim: rgba(243, 241, 236, 0.45);
+  --accent: #f1d7a1;
+  --solve-bg: #f2f0eb;
+  --solve-text: #111111;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist Sans', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+.shell {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.scene-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+
+.hud {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  padding: calc(22px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right))
+    calc(22px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hud-code,
+.hud-timer,
+.hud-name,
+.sound-toggle,
+.solve-kicker,
+.solve-code,
+.solve-title,
+.solve-time,
+.solve-stats,
+.share-button,
+.solve-next {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hud-code {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.hud-name {
+  margin-top: 7px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.hud-timer {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+}
+
+.sound-toggle {
+  pointer-events: auto;
+  background: none;
+  border: 0;
+  padding: 8px 0;
+  color: var(--text-dim);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.sound-toggle.is-muted {
+  text-decoration: line-through;
+  opacity: 0.4;
+}
+
+.sound-toggle:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.intro-veil,
+.white-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.intro-veil {
+  background: #050505;
+}
+
+.white-veil {
+  background: #ffffff;
+  z-index: 9;
+}
+
+.solve-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--solve-text);
+  background: var(--solve-bg);
+}
+
+.solve-inner {
+  text-align: center;
+  padding: 24px;
+}
+
+.solve-kicker {
+  font-size: 12px;
+  color: rgba(17, 17, 17, 0.38);
+  margin-bottom: 28px;
+}
+
+.solve-code {
+  font-size: 13px;
+}
+
+.solve-title {
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.solve-time {
+  margin-top: 48px;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.22em;
+}
+
+.solve-stats {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.share-button {
+  margin-top: 42px;
+  background: none;
+  border: 0;
+  color: var(--solve-text);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 10px 4px;
+}
+
+.share-button:focus-visible {
+  outline: 1px solid #111;
+  outline-offset: 6px;
+}
+
+.solve-next {
+  margin-top: 64px;
+  font-size: 11px;
+}
+
+.solve-tomorrow {
+  margin-top: 8px;
+  color: rgba(17, 17, 17, 0.4);
+}
+
+.solve-countdown {
+  margin-top: 10px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.22em;
+  color: rgba(17, 17, 17, 0.28);
+  font-size: 10px;
+}
+
+.debug-panel {
+  position: fixed;
+  top: calc(84px + env(safe-area-inset-top));
+  left: calc(20px + env(safe-area-inset-left));
+  z-index: 12;
+  font-size: 10px;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: rgba(243, 241, 236, 0.72);
+  pointer-events: auto;
+  max-width: 52vw;
+}
+
+.debug-panel button {
+  margin-top: 8px;
+  margin-right: 8px;
+  background: none;
+  border: 1px solid rgba(243, 241, 236, 0.25);
+  color: inherit;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .hud-code,
+  .hud-timer {
+    font-size: 11px;
+  }
+
+  .solve-time {
+    font-size: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-veil,
+  .white-veil {
+    transition: none;
+  }
+}
