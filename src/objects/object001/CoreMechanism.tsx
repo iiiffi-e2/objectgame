@@ -57,48 +57,50 @@ export function CoreMechanism() {
   return (
     <group>
       <group ref={upper}>
-        <mesh userData={{ interact: 'body' }} castShadow material={materials.titanium}>
-          <sphereGeometry args={[RADIUS, 48, 28, 0, TAU, 0, Math.PI / 2]} />
+        <mesh userData={{ interact: 'body' }} castShadow={!lite} material={materials.titanium}>
+          <sphereGeometry args={[RADIUS, lite ? 24 : 48, lite ? 14 : 28, 0, TAU, 0, Math.PI / 2]} />
         </mesh>
         <mesh position={[0, RADIUS * 0.78, 0]} material={materials.ceramic}>
-          <cylinderGeometry args={[0.16, 0.18, 0.06, 32]} />
+          <cylinderGeometry args={[0.16, 0.18, 0.06, lite ? 12 : 32]} />
         </mesh>
         <mesh position={[0, RADIUS * 0.82, 0]} material={materials.glass}>
-          <circleGeometry args={[0.12, 32]} />
+          <circleGeometry args={[0.12, lite ? 12 : 32]} />
         </mesh>
       </group>
 
       <group ref={lower}>
-        <mesh userData={{ interact: 'body' }} castShadow material={materials.titanium}>
-          <sphereGeometry args={[RADIUS, 48, 28, 0, TAU, Math.PI / 2, Math.PI / 2]} />
+        <mesh userData={{ interact: 'body' }} castShadow={!lite} material={materials.titanium}>
+          <sphereGeometry args={[RADIUS, lite ? 24 : 48, lite ? 14 : 28, 0, TAU, Math.PI / 2, Math.PI / 2]} />
         </mesh>
       </group>
 
-      <mesh rotation={[Math.PI / 2, 0, 0]} castShadow material={materials.ceramic}>
-        <torusGeometry args={[0.78, 0.028, 10, 64]} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} castShadow={!lite} material={materials.ceramic}>
+        <torusGeometry args={[0.78, 0.028, lite ? 6 : 10, lite ? 24 : 64]} />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} material={materials.seam}>
-        <torusGeometry args={[0.62, 0.012, 8, 64]} />
+        <torusGeometry args={[0.62, 0.012, lite ? 6 : 8, lite ? 24 : 64]} />
       </mesh>
       <mesh rotation={[0, 0, Math.PI / 2]} material={materials.seam}>
-        <torusGeometry args={[0.7, 0.008, 8, 64]} />
+        <torusGeometry args={[0.7, 0.008, lite ? 6 : 8, lite ? 24 : 64]} />
       </mesh>
-      <mesh rotation={[Math.PI / 3, 0.4, 0.2]} material={materials.seam}>
-        <torusGeometry args={[0.66, 0.007, 8, 48]} />
-      </mesh>
+      {!lite && (
+        <mesh rotation={[Math.PI / 3, 0.4, 0.2]} material={materials.seam}>
+          <torusGeometry args={[0.66, 0.007, 8, 48]} />
+        </mesh>
+      )}
       {bolts}
 
       <group ref={cage}>
         <mesh rotation={[Math.PI / 2, 0, 0]} material={materials.ceramic}>
-          <torusGeometry args={[0.34, 0.012, 8, 32]} />
+          <torusGeometry args={[0.34, 0.012, lite ? 6 : 8, lite ? 16 : 32]} />
         </mesh>
         <mesh material={materials.ceramic}>
-          <torusGeometry args={[0.34, 0.012, 8, 32]} />
+          <torusGeometry args={[0.34, 0.012, lite ? 6 : 8, lite ? 16 : 32]} />
         </mesh>
         <mesh rotation={[0, Math.PI / 2, 0]} material={materials.ceramic}>
-          <torusGeometry args={[0.34, 0.012, 8, 32]} />
+          <torusGeometry args={[0.34, 0.012, lite ? 6 : 8, lite ? 16 : 32]} />
         </mesh>
-        <pointLight color="#F1D7A1" intensity={0.35} distance={1.8} />
+        {!lite && <pointLight color="#F1D7A1" intensity={0.35} distance={1.8} />}
       </group>
 
       <FalseLeads />
@@ -112,6 +114,7 @@ function FalseLeads() {
   const hatchMesh = useRef<Mesh>(null)
   const switchMesh = useRef<Mesh>(null)
   const runtime = useRuntime()
+  const lite = needsLiteGraphics()
 
   useFrame((_, dt) => {
     runtime.hatchKick.current = Math.max(0, runtime.hatchKick.current - dt * 2.4)
@@ -132,10 +135,10 @@ function FalseLeads() {
         <mesh
           ref={hatchMesh}
           userData={{ interact: 'hatch' }}
-          castShadow
+          castShadow={!lite}
           material={materials.ceramic}
         >
-          <cylinderGeometry args={[0.09, 0.1, 0.03, 24]} />
+          <cylinderGeometry args={[0.09, 0.1, 0.03, lite ? 12 : 24]} />
         </mesh>
         <mesh position={[0, 0.018, 0]} material={materials.glass}>
           <circleGeometry args={[0.055, 24]} />
@@ -146,7 +149,7 @@ function FalseLeads() {
         userData={{ interact: 'switch' }}
         position={[0.56, -0.22, 0.48]}
         rotation={[0.3, 0.4, 0.8]}
-        castShadow
+        castShadow={!lite}
         material={materials.titanium}
       >
         <boxGeometry args={[0.045, 0.07, 0.03]} />

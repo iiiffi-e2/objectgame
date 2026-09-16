@@ -1,3 +1,4 @@
+import { needsLiteGraphics } from '../../lib/device'
 import type { ObjectMaterials } from './materials'
 import { OBJECT_001_CONFIG } from './object001Config'
 
@@ -9,9 +10,10 @@ type GlyphArcProps = {
 
 export function GlyphArc({ start, arc, materials }: GlyphArcProps) {
   const { radius, tube } = OBJECT_001_CONFIG.glyph
+  const lite = needsLiteGraphics()
   return (
     <mesh rotation={[Math.PI / 2, start, 0]} castShadow material={materials.glyph}>
-      <torusGeometry args={[radius, tube, 10, 48, arc]} />
+      <torusGeometry args={[radius, tube, lite ? 6 : 10, lite ? 24 : 48, arc]} />
     </mesh>
   )
 }

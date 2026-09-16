@@ -1,7 +1,15 @@
 import { Canvas } from '@react-three/fiber'
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ACESFilmicToneMapping, Group, PCFShadowMap, Quaternion, Vector3, type Mesh } from 'three'
+import {
+  ACESFilmicToneMapping,
+  BasicShadowMap,
+  Group,
+  PCFShadowMap,
+  Quaternion,
+  Vector3,
+  type Mesh,
+} from 'three'
 import { audio } from '../audio/AudioManager'
 import { isDebugMode, shouldResetOnBoot } from '../lib/debug'
 import { needsLiteGraphics, prefersReducedMotion } from '../lib/device'
@@ -62,6 +70,7 @@ export function GameShell() {
           <Canvas
             className="scene-canvas"
             shadows
+            frameloop={lite ? 'demand' : 'always'}
             dpr={lite ? 1 : [1, 1.75]}
             gl={{
               antialias: !lite,
@@ -77,17 +86,24 @@ export function GameShell() {
               near: 0.1,
               far: 40,
             }}
-            onCreated={({ gl }) => {
+            onCreated={({ gl, invalidate }) => {
               gl.setClearColor('#050505')
               gl.toneMapping = ACESFilmicToneMapping
               gl.toneMappingExposure = lite ? 0.95 : 1.04
               gl.shadowMap.enabled = true
-              gl.shadowMap.type = PCFShadowMap
+              gl.shadowMap.type = lite ? BasicShadowMap : PCFShadowMap
               const canvas = gl.domElement
               const onLost = (event: Event) => {
                 event.preventDefault()
               }
+              const onRestored = () => {
+                gl.setClearColor('#050505')
+                gl.shadowMap.enabled = true
+                gl.shadowMap.needsUpdate = true
+                invalidate()
+              }
               canvas.addEventListener('webglcontextlost', onLost, false)
+              canvas.addEventListener('webglcontextrestored', onRestored, false)
             }}
           >
             <Scene />

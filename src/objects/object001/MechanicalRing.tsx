@@ -59,7 +59,7 @@ export function MechanicalRing({
 
   return (
     <group>
-      <mesh castShadow material={materials.titanium}>
+      <mesh castShadow={!lite} material={materials.titanium}>
         <torusGeometry args={[radius, tube, radial, tubular, TAU - gap]} />
       </mesh>
       {!lite && (

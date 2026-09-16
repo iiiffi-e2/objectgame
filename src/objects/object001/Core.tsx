@@ -45,10 +45,10 @@ export function Core() {
       }}
     >
       <mesh userData={{ interact: 'core' }} material={materials.amber}>
-        <sphereGeometry args={[0.24, 32, 32]} />
+        <sphereGeometry args={[0.24, lite ? 16 : 32, lite ? 16 : 32]} />
       </mesh>
       <mesh userData={{ interact: 'core' }} material={materials.glass}>
-        <sphereGeometry args={[0.32, 32, 32]} />
+        <sphereGeometry args={[0.32, lite ? 16 : 32, lite ? 16 : 32]} />
       </mesh>
       <mesh userData={{ interact: 'core' }} visible={false}>
         <sphereGeometry args={[0.48, 16, 16]} />
@@ -56,7 +56,7 @@ export function Core() {
       {!lite && (
         <Sparkles count={22} scale={0.7} size={1.4} speed={0.28} color="#F1D7A1" opacity={0.7} />
       )}
-      <pointLight color="#F1D7A1" intensity={1.8} distance={3.2} />
+      {!lite && <pointLight color="#F1D7A1" intensity={1.8} distance={3.2} />}
     </group>
   )
 }

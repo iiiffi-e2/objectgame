@@ -41,13 +41,17 @@ export function Lighting() {
         shadow-normalBias={0.028}
         shadow-camera-near={1}
         shadow-camera-far={20}
-        shadow-camera-left={-4.4}
-        shadow-camera-right={4.4}
-        shadow-camera-top={4.4}
-        shadow-camera-bottom={-4.4}
+        shadow-camera-left={lite ? -3.4 : -4.4}
+        shadow-camera-right={lite ? 3.4 : 4.4}
+        shadow-camera-top={lite ? 3.4 : 4.4}
+        shadow-camera-bottom={lite ? -3.4 : -4.4}
       />
-      <directionalLight ref={fill} color="#c9d4de" intensity={0.16} position={[-5, 1.6, -2.4]} />
-      <directionalLight color="#F1D7A1" intensity={0.22} position={[0.2, -0.8, -4.2]} />
+      {!lite && (
+        <>
+          <directionalLight ref={fill} color="#c9d4de" intensity={0.16} position={[-5, 1.6, -2.4]} />
+          <directionalLight color="#F1D7A1" intensity={0.22} position={[0.2, -0.8, -4.2]} />
+        </>
+      )}
     </>
   )
 }

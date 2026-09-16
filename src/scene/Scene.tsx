@@ -4,6 +4,7 @@ import { PuzzleController } from '../interaction/PuzzleController'
 import { CameraRig } from './CameraRig'
 import { SceneEnvironment } from './Environment'
 import { Lighting } from './Lighting'
+import { LiteLoop } from './LiteLoop'
 import { PostFX } from './PostFX'
 import { ShadowSurface } from './ShadowSurface'
 
@@ -14,6 +15,7 @@ export function Scene() {
     <>
       <color attach="background" args={['#050505']} />
       <fog attach="fog" args={['#050505', 9, 20]} />
+      <LiteLoop />
       <CameraRig />
       <Lighting />
       <SceneEnvironment />
