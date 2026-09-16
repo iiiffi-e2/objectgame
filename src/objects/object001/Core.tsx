@@ -4,12 +4,14 @@ import { useRef } from 'react'
 import type { Group } from 'three'
 import { tryActivateCore } from '../../interaction/activateCore'
 import { useRuntime } from '../../interaction/runtime'
+import { needsLiteGraphics } from '../../lib/device'
 import { useObjectMaterials } from './materials'
 
 export function Core() {
   const materials = useObjectMaterials()
   const runtime = useRuntime()
   const group = useRef<Group>(null)
+  const lite = needsLiteGraphics()
 
   useFrame(({ clock }, dt) => {
     const t = runtime.opening.current
@@ -51,7 +53,9 @@ export function Core() {
       <mesh userData={{ interact: 'core' }} visible={false}>
         <sphereGeometry args={[0.48, 16, 16]} />
       </mesh>
-      <Sparkles count={22} scale={0.7} size={1.4} speed={0.28} color="#F1D7A1" opacity={0.7} />
+      {!lite && (
+        <Sparkles count={22} scale={0.7} size={1.4} speed={0.28} color="#F1D7A1" opacity={0.7} />
+      )}
       <pointLight color="#F1D7A1" intensity={1.8} distance={3.2} />
     </group>
   )

@@ -1,10 +1,10 @@
 import { Canvas } from '@react-three/fiber'
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ACESFilmicToneMapping, Group, PCFSoftShadowMap, Quaternion, Vector3, type Mesh } from 'three'
+import { ACESFilmicToneMapping, Group, PCFShadowMap, Quaternion, Vector3, type Mesh } from 'three'
 import { audio } from '../audio/AudioManager'
 import { isDebugMode, shouldResetOnBoot } from '../lib/debug'
-import { isCoarsePointer, prefersReducedMotion } from '../lib/device'
+import { needsLiteGraphics, prefersReducedMotion } from '../lib/device'
 import { RuntimeProvider, type RuntimeRefs } from '../interaction/runtime'
 import { Scene } from '../scene/Scene'
 import { DebugPanel } from '../ui/DebugPanel'
@@ -17,7 +17,7 @@ export function GameShell() {
   const phase = useGameStore((s) => s.phase)
   const debug = isDebugMode()
   const reduced = prefersReducedMotion()
-  const mobile = isCoarsePointer()
+  const lite = needsLiteGraphics()
   const [booted, setBooted] = useState(false)
 
   const runtime = useCreateRuntime()
@@ -62,11 +62,14 @@ export function GameShell() {
           <Canvas
             className="scene-canvas"
             shadows
-            dpr={mobile ? [1, 1.35] : [1, 1.75]}
+            dpr={lite ? 1 : [1, 1.75]}
             gl={{
-              antialias: !mobile,
+              antialias: !lite,
               alpha: false,
-              powerPreference: 'high-performance',
+              stencil: false,
+              depth: true,
+              powerPreference: lite ? 'low-power' : 'high-performance',
+              failIfMajorPerformanceCaveat: false,
             }}
             camera={{
               fov: OBJECT_001_CONFIG.camera.fov,
@@ -77,9 +80,14 @@ export function GameShell() {
             onCreated={({ gl }) => {
               gl.setClearColor('#050505')
               gl.toneMapping = ACESFilmicToneMapping
-              gl.toneMappingExposure = 1.04
+              gl.toneMappingExposure = lite ? 0.95 : 1.04
               gl.shadowMap.enabled = true
-              gl.shadowMap.type = PCFSoftShadowMap
+              gl.shadowMap.type = PCFShadowMap
+              const canvas = gl.domElement
+              const onLost = (event: Event) => {
+                event.preventDefault()
+              }
+              canvas.addEventListener('webglcontextlost', onLost, false)
             }}
           >
             <Scene />

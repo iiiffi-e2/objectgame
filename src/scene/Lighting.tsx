@@ -3,14 +3,14 @@ import { useLayoutEffect, useRef } from 'react'
 import type { DirectionalLight } from 'three'
 import { useRuntime } from '../interaction/runtime'
 import { OBJECT_001_CONFIG } from '../objects/object001/object001Config'
-import { isCoarsePointer } from '../lib/device'
+import { needsLiteGraphics } from '../lib/device'
 
 export function Lighting() {
   const runtime = useRuntime()
   const key = useRef<DirectionalLight>(null)
   const fill = useRef<DirectionalLight>(null)
   const { default: rest } = OBJECT_001_CONFIG.light
-  const mobile = isCoarsePointer()
+  const lite = needsLiteGraphics()
 
   useLayoutEffect(() => {
     key.current?.target.position.set(0, -0.2, 0)
@@ -30,13 +30,13 @@ export function Lighting() {
 
   return (
     <>
-      <ambientLight intensity={0.04} color="#8d8880" />
+      <ambientLight intensity={lite ? 0.16 : 0.04} color="#8d8880" />
       <directionalLight
         ref={key}
         color="#f3eee6"
-        intensity={2.1}
+        intensity={lite ? 1.7 : 2.1}
         castShadow
-        shadow-mapSize={mobile ? [1024, 1024] : [2048, 2048]}
+        shadow-mapSize={lite ? [512, 512] : [2048, 2048]}
         shadow-bias={-0.00018}
         shadow-normalBias={0.028}
         shadow-camera-near={1}

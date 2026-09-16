@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react'
 import { TAU } from '../../lib/math'
+import { needsLiteGraphics } from '../../lib/device'
 import type { ObjectMaterials } from './materials'
 
 type MechanicalRingProps = {
@@ -19,6 +20,9 @@ export function MechanicalRing({
   materials,
   children,
 }: MechanicalRingProps) {
+  const lite = needsLiteGraphics()
+  const radial = lite ? 8 : 14
+  const tubular = lite ? 32 : 72
   const notchElements = useMemo(() => {
     return Array.from({ length: notches }, (_, index) => {
       const angle = (index / notches) * TAU
@@ -27,14 +31,14 @@ export function MechanicalRing({
           key={index}
           position={[Math.cos(angle) * radius, Math.sin(angle) * radius, 0]}
           rotation={[0, 0, angle]}
-          castShadow
+          castShadow={!lite}
           material={materials.ceramic}
         >
           <boxGeometry args={[tube * 1.85, tube * 0.32, tube * 0.7]} />
         </mesh>
       )
     })
-  }, [materials.ceramic, notches, radius, tube])
+  }, [lite, materials.ceramic, notches, radius, tube])
 
   const vents = useMemo(() => {
     return Array.from({ length: 5 }, (_, index) => {
@@ -44,25 +48,27 @@ export function MechanicalRing({
           key={index}
           position={[Math.cos(angle) * radius, Math.sin(angle) * radius, tube * 0.55]}
           rotation={[Math.PI / 2, 0, angle]}
-          castShadow
+          castShadow={!lite}
           material={materials.seam}
         >
           <boxGeometry args={[tube * 1.1, tube * 0.18, tube * 0.42]} />
         </mesh>
       )
     })
-  }, [materials.seam, radius, tube])
+  }, [lite, materials.seam, radius, tube])
 
   return (
     <group>
       <mesh castShadow material={materials.titanium}>
-        <torusGeometry args={[radius, tube, 14, 72, TAU - gap]} />
+        <torusGeometry args={[radius, tube, radial, tubular, TAU - gap]} />
       </mesh>
-      <mesh material={materials.ceramic}>
-        <torusGeometry args={[radius, tube * 0.38, 8, 64]} />
-      </mesh>
+      {!lite && (
+        <mesh material={materials.ceramic}>
+          <torusGeometry args={[radius, tube * 0.38, 8, 64]} />
+        </mesh>
+      )}
       {notchElements}
-      {vents}
+      {!lite && vents}
       {children}
     </group>
   )

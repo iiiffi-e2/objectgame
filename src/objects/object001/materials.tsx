@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react'
 import { Color, MeshPhysicalMaterial, MeshStandardMaterial } from 'three'
+import { needsLiteGraphics } from '../../lib/device'
 
 export type ObjectMaterials = {
   titanium: MeshPhysicalMaterial
@@ -14,30 +15,31 @@ const MaterialsContext = createContext<ObjectMaterials | null>(null)
 
 export function ObjectMaterialsProvider({ children }: { children: ReactNode }) {
   const materials = useMemo<ObjectMaterials>(() => {
+    const lite = needsLiteGraphics()
     const titanium = new MeshPhysicalMaterial({
       color: new Color('#383B3D'),
       metalness: 0.86,
       roughness: 0.47,
-      clearcoat: 0.14,
+      clearcoat: lite ? 0 : 0.14,
       clearcoatRoughness: 0.62,
-      envMapIntensity: 0.48,
+      envMapIntensity: lite ? 0.2 : 0.48,
     })
     const ceramic = new MeshPhysicalMaterial({
       color: new Color('#111213'),
       metalness: 0.12,
       roughness: 0.24,
-      envMapIntensity: 0.35,
+      envMapIntensity: lite ? 0.15 : 0.35,
     })
     const glass = new MeshPhysicalMaterial({
       color: new Color('#1c1d1e'),
       metalness: 0.04,
-      roughness: 0.16,
+      roughness: lite ? 0.22 : 0.16,
       transparent: true,
-      opacity: 0.42,
-      transmission: 0.22,
-      thickness: 0.35,
+      opacity: lite ? 0.5 : 0.42,
+      transmission: lite ? 0 : 0.22,
+      thickness: lite ? 0 : 0.35,
       ior: 1.45,
-      envMapIntensity: 0.8,
+      envMapIntensity: lite ? 0.2 : 0.8,
     })
     const amber = new MeshStandardMaterial({
       color: new Color('#F1D7A1'),

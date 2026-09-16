@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import type { Group, Mesh } from 'three'
 import { useRuntime } from '../../interaction/runtime'
 import { TAU } from '../../lib/math'
+import { needsLiteGraphics } from '../../lib/device'
 import { useObjectMaterials } from './materials'
 import { OBJECT_001_CONFIG } from './object001Config'
 
@@ -11,6 +12,7 @@ const RADIUS = OBJECT_001_CONFIG.bodyRadius
 export function CoreMechanism() {
   const materials = useObjectMaterials()
   const runtime = useRuntime()
+  const lite = needsLiteGraphics()
   const upper = useRef<Group>(null)
   const lower = useRef<Group>(null)
   const cage = useRef<Group>(null)
@@ -44,7 +46,7 @@ export function CoreMechanism() {
         key={index}
         position={[Math.cos(angle) * 0.72, 0.02, Math.sin(angle) * 0.72]}
         rotation={[Math.PI / 2, 0, angle]}
-        castShadow
+        castShadow={!lite}
         material={materials.ceramic}
       >
         <cylinderGeometry args={[0.032, 0.032, 0.03, 6]} />
