@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ACESFilmicToneMapping,
-  BasicShadowMap,
   Group,
+  NoToneMapping,
   PCFShadowMap,
   Quaternion,
   Vector3,
@@ -69,15 +69,16 @@ export function GameShell() {
         {phase !== 'solved' && (
           <Canvas
             className="scene-canvas"
-            shadows
-            frameloop={lite ? 'demand' : 'always'}
+            shadows={!lite}
+            frameloop="always"
             dpr={lite ? 1 : [1, 1.75]}
             gl={{
               antialias: !lite,
               alpha: false,
               stencil: false,
               depth: true,
-              powerPreference: lite ? 'low-power' : 'high-performance',
+              precision: lite ? 'mediump' : 'highp',
+              powerPreference: lite ? 'default' : 'high-performance',
               failIfMajorPerformanceCaveat: false,
             }}
             camera={{
@@ -86,24 +87,19 @@ export function GameShell() {
               near: 0.1,
               far: 40,
             }}
-            onCreated={({ gl, invalidate }) => {
+            onCreated={({ gl }) => {
               gl.setClearColor('#050505')
-              gl.toneMapping = ACESFilmicToneMapping
-              gl.toneMappingExposure = lite ? 0.95 : 1.04
-              gl.shadowMap.enabled = true
-              gl.shadowMap.type = lite ? BasicShadowMap : PCFShadowMap
+              gl.toneMapping = lite ? NoToneMapping : ACESFilmicToneMapping
+              gl.toneMappingExposure = lite ? 1 : 1.04
+              gl.shadowMap.enabled = !lite
+              if (!lite) {
+                gl.shadowMap.type = PCFShadowMap
+              }
               const canvas = gl.domElement
               const onLost = (event: Event) => {
                 event.preventDefault()
               }
-              const onRestored = () => {
-                gl.setClearColor('#050505')
-                gl.shadowMap.enabled = true
-                gl.shadowMap.needsUpdate = true
-                invalidate()
-              }
               canvas.addEventListener('webglcontextlost', onLost, false)
-              canvas.addEventListener('webglcontextrestored', onRestored, false)
             }}
           >
             <Scene />

@@ -44,7 +44,7 @@ function ringAxis(id: RingId, quat: Quaternion): Vector3 {
 
 export function InteractionController() {
   const runtime = useRuntime()
-  const { camera, gl, invalidate } = useThree()
+  const { camera, gl } = useThree()
   const pointers = useRef(new Map<number, PointerRec>())
   const lastRingPoint = useRef(new Vector3())
   const lastDetent = useRef({ outer: 0, middle: 0, inner: 0 })
@@ -81,10 +81,6 @@ export function InteractionController() {
       audio.ensure()
     }
 
-    const bumpLite = () => {
-      if (needsLiteGraphics()) invalidate()
-    }
-
     const pick = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect()
       toNdc(event, rect, pointerNdc)
@@ -96,7 +92,6 @@ export function InteractionController() {
 
     const onDown = (event: PointerEvent) => {
       audio.ensure()
-      bumpLite()
       canvas.setPointerCapture(event.pointerId)
       pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
       clickStart.current = {
@@ -279,7 +274,6 @@ export function InteractionController() {
     }
 
     const onUp = (event: PointerEvent) => {
-      bumpLite()
       const wasDrag = runtime.drag.current
       pointers.current.delete(event.pointerId)
       if (pointers.current.size === 0) {
@@ -329,7 +323,6 @@ export function InteractionController() {
 
     const onWheel = (event: WheelEvent) => {
       event.preventDefault()
-      bumpLite()
       const cam = OBJECT_001_CONFIG.camera
       runtime.distance.current = clamp(
         runtime.distance.current + event.deltaY * 0.0032,
@@ -369,7 +362,7 @@ export function InteractionController() {
       canvas.removeEventListener('wheel', onWheel)
       window.removeEventListener('keydown', onKey)
     }
-  }, [camera, gl, invalidate, runtime, coarse])
+  }, [camera, gl, runtime, coarse])
 
   useFrame((_, dt) => {
     const inertia = reduced ? 16 : 4.4

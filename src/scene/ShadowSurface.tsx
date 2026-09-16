@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import type { MeshStandardMaterial } from 'three'
 import { Color } from 'three'
 import { useRuntime } from '../interaction/runtime'
+import { needsLiteGraphics } from '../lib/device'
 import { lerp } from '../lib/math'
 
 const dark = new Color('#171716')
@@ -12,6 +13,7 @@ const current = new Color('#171716')
 export function ShadowSurface() {
   const runtime = useRuntime()
   const material = useRef<MeshStandardMaterial>(null)
+  const lite = needsLiteGraphics()
 
   useFrame((_, dt) => {
     if (!material.current) return
@@ -19,6 +21,15 @@ export function ShadowSurface() {
     material.current.color.lerp(current, 1 - Math.exp(-4 * dt))
     material.current.roughness = lerp(0.96, 0.88, runtime.floorHint.current)
   })
+
+  if (lite) {
+    return (
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.74, -0.15]}>
+        <planeGeometry args={[16, 16]} />
+        <meshBasicMaterial color="#171716" />
+      </mesh>
+    )
+  }
 
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.74, -0.15]} receiveShadow>

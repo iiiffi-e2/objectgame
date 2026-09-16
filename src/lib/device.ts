@@ -1,6 +1,7 @@
 export type LiteGraphicsInput = {
   userAgent?: string
   pointerCoarse?: boolean
+  search?: string
 }
 
 export function prefersReducedMotion(): boolean {
@@ -14,6 +15,9 @@ export function isCoarsePointer(): boolean {
 }
 
 export function needsLiteGraphics(input: LiteGraphicsInput = {}): boolean {
+  const search = input.search ?? (typeof window === 'undefined' ? '' : window.location.search)
+  const liteQuery = new URLSearchParams(search).get('lite')
+  if (liteQuery === '1' || liteQuery === 'true') return true
   const userAgent = input.userAgent ?? (typeof navigator === 'undefined' ? '' : navigator.userAgent)
   if (/Android/i.test(userAgent)) return true
   if (/iPhone|iPad|iPod/i.test(userAgent)) return true

@@ -35,16 +35,16 @@ export function Lighting() {
         ref={key}
         color="#f3eee6"
         intensity={lite ? 1.7 : 2.1}
-        castShadow
-        shadow-mapSize={lite ? [512, 512] : [2048, 2048]}
+        castShadow={!lite}
+        shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.00018}
         shadow-normalBias={0.028}
         shadow-camera-near={1}
         shadow-camera-far={20}
-        shadow-camera-left={lite ? -3.4 : -4.4}
-        shadow-camera-right={lite ? 3.4 : 4.4}
-        shadow-camera-top={lite ? 3.4 : 4.4}
-        shadow-camera-bottom={lite ? -3.4 : -4.4}
+        shadow-camera-left={-4.4}
+        shadow-camera-right={4.4}
+        shadow-camera-top={4.4}
+        shadow-camera-bottom={-4.4}
       />
       {!lite && (
         <>
